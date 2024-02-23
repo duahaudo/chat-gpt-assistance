@@ -1,0 +1,69 @@
+import { systemMessages } from './constance'
+import axios from 'axios'
+import { ChatGptMessage } from '../src/interface'
+import { planning_task, tools } from './utils'
+
+export default class AxiosHelper {
+  private axiosInstance = axios.create({
+    baseURL: 'https://api.openai.com/v1',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+    },
+  })
+
+  private history: ChatGptMessage[] = []
+
+  constructor() {
+    this.history.push(systemMessages)
+  }
+
+  async post(model: string, prompt: string) {
+    try {
+      this.history.push({ role: 'user', content: prompt })
+
+      const data = {
+        messages: [...this.history],
+        model: model || 'gpt-3.5-turbo',
+        temperature: 0.8,
+        tool_choice: 'auto',
+        tools,
+      }
+
+      const response = await this.axiosInstance.post('/chat/completions', data)
+
+      const {
+        message,
+        finish_reason,
+      }: {
+        message: ChatGptMessage
+        finish_reason: 'stop' | 'tool_calls'
+      } = response.data.choices[0]
+      console.log(
+        `🚀 SLOG (${new Date().toLocaleTimeString()}): ➡ AxiosHelper ➡ post ➡ message:`,
+        JSON.stringify(response.data.choices[0], null, 2)
+      )
+
+      if (finish_reason === 'tool_calls') {
+        if (message.tool_calls && message.tool_calls[0].function.arguments) {
+          const params = JSON.parse(message.tool_calls[0].function.arguments)
+          const result = planning_task(params.tickets)
+          message.content = result
+          message.role = 'tool'
+        }
+      }
+
+      this.history.push(message)
+
+      return message
+    } catch (error: any) {
+      console.error('Error fetching chat completion:', Object.keys(error), error.message)
+
+      return error.response?.data.error.message || error.message
+    }
+  }
+
+  clearHistory() {
+    this.history = []
+  }
+}
