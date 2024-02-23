@@ -25,7 +25,7 @@ export default class AxiosHelper {
       const data = {
         messages: [...this.history],
         model: model || 'gpt-3.5-turbo',
-        temperature: 0.8,
+        temperature: 0.1,
         tool_choice: 'auto',
         tools,
       }
@@ -44,26 +44,39 @@ export default class AxiosHelper {
         JSON.stringify(response.data.choices[0], null, 2)
       )
 
+      this.history.push(message)
+
       if (finish_reason === 'tool_calls') {
         if (message.tool_calls && message.tool_calls[0].function.arguments) {
           const params = JSON.parse(message.tool_calls[0].function.arguments)
           const result = planning_task(params.tickets)
-          message.content = result
-          message.role = 'tool'
+
+          const functionResponse: ChatGptMessage = {
+            tool_call_id: message.tool_calls[0].id,
+            role: 'tool',
+            name: message.tool_calls[0].function.name,
+            content: result,
+          }
+          this.history.push(functionResponse)
+
+          return functionResponse
         }
       }
 
-      this.history.push(message)
-
       return message
     } catch (error: any) {
-      console.error('Error fetching chat completion:', Object.keys(error), error.message)
+      console.error(
+        'Error fetching chat completion:',
+        // Object.keys(error),
+        this.history,
+        error.response?.data.error
+      )
 
       return error.response?.data.error.message || error.message
     }
   }
 
   clearHistory() {
-    this.history = []
+    this.history = [{ ...systemMessages }]
   }
 }

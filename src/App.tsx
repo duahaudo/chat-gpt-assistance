@@ -20,15 +20,15 @@ import './App.css'
 import { ChatGptMessage, Message } from './interface'
 
 const App: React.FC = () => {
-  const [input, setInput] = useState(`Start date: Feb 22
-  FSH2403ST-195	timmy	2
-FSH2403ST-196	Stiger	1
+  const [input, setInput] = useState(`
+Key	Assignee	Est
+FSH2403ST-195	timmy	8
+FSH2403ST-196	Stiger	8
 FSH2403ST-197	Phoebe	4
 FSH2403ST-198	timmy	4
 FSH2403ST-199	Stiger	2
 FSH2403ST-200	timmy	3
 FSH2403ST-201	Stiger	1
-FSH2403ST-127	Jun	2
 `)
   const [conversation, setConversation] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -62,11 +62,11 @@ FSH2403ST-127	Jun	2
         )
 
         return data
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching chat completion:', error)
         toast({
           title: 'Error fetching response',
-          description: 'There was an issue with fetching the chat completion.',
+          description: error.response.data.message,
           status: 'error',
           duration: 5000,
           isClosable: true,
@@ -83,8 +83,10 @@ FSH2403ST-127	Jun	2
     const { role, content } = await fetchChatCompletion(trimmedInput)
     setConversation((prev) => [...prev, { text: content, isUser: role === 'user' }])
 
-    if (role === 'assistant') {
-      textareaRef.current?.focus()
+    if (role !== 'user') {
+      setTimeout(() => {
+        textareaRef.current?.focus()
+      }, 0)
     }
   }, [input, setConversation, toast, model])
 

@@ -50,8 +50,12 @@ export const tools = [
               required: ['date', 'ticketNumber', 'estimation', 'assignee'],
             },
           },
+          confirmed: {
+            type: 'string',
+            description: 'User must type "Confirmed" to proceed with the planning task.',
+          },
         },
-        required: ['tickets'],
+        required: ['tickets', 'confirmed'],
       },
     },
   },

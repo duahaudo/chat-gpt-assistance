@@ -18,6 +18,7 @@ export interface ChatGptMessage {
   tool_call_id?: string
   finish_reason?: string
   tool_calls?: ToolCall[]
+  name?: string
 }
 
 export interface Ticket {
