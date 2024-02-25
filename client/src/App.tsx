@@ -15,24 +15,14 @@ import {
   Spacer,
 } from '@chakra-ui/react'
 import axios from 'axios'
-// import ReactMarkdown from 'react-markdown'
 import './App.css'
-import { ChatGptMessage, Message } from './interface'
+import { ChatGptMessage, ChatGptModel, Message } from './interface'
 
 const App: React.FC = () => {
-  const [input, setInput] = useState(`
-Key	Assignee	Est
-FSH2403ST-195	timmy	8
-FSH2403ST-196	Stiger	8
-FSH2403ST-197	Phoebe	4
-FSH2403ST-198	timmy	4
-FSH2403ST-199	Stiger	2
-FSH2403ST-200	timmy	3
-FSH2403ST-201	Stiger	1
-`)
+  const [input, setInput] = useState<string>('')
   const [conversation, setConversation] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
-  const [model, setModel] = useState('gpt-3.5-turbo-0125')
+  const [model, setModel] = useState<ChatGptModel>(ChatGptModel['gpt-4-turbo-preview'])
   const toast = useToast()
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -152,11 +142,11 @@ FSH2403ST-201	Stiger	1
         </Box>
         <HStack width='100%'>
           <RadioGroup
-            onChange={setModel}
+            onChange={(val: ChatGptModel) => setModel(val)}
             value={model}>
             <Stack direction='row'>
-              <Radio value='gpt-3.5-turbo-0125'>GPT-3.5-Turbo</Radio>
-              <Radio value='gpt-4-turbo-preview'>GPT-4-Turbo-Preview</Radio>
+              <Radio value={ChatGptModel['gpt-3.5-turbo']}>GPT-3.5-Turbo</Radio>
+              <Radio value={ChatGptModel['gpt-4-turbo-preview']}>GPT-4-Turbo-Preview</Radio>
             </Stack>
           </RadioGroup>
           <Spacer />

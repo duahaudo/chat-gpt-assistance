@@ -1,4 +1,4 @@
-import { systemMessages } from './constance'
+import { taskPlanner } from './systemPrompt'
 import axios from 'axios'
 import { ChatGptMessage } from '../client/src/interface'
 import { planning_task, tools } from './utils'
@@ -15,7 +15,7 @@ export default class AxiosHelper {
   private history: ChatGptMessage[] = []
 
   constructor() {
-    this.history.push(systemMessages)
+    this.history.push(taskPlanner)
   }
 
   async post(model: string, prompt: string) {
@@ -77,6 +77,6 @@ export default class AxiosHelper {
   }
 
   clearHistory() {
-    this.history = [{ ...systemMessages }]
+    this.history = [{ ...taskPlanner }]
   }
 }

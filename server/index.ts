@@ -7,12 +7,12 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 
 const app = express()
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
 const axiosHelper = new AxiosHelper()
 
 app.use(cors())
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-console.log(`🚀 SLOG (${new Date().toLocaleTimeString()}): ➡ __dirname:`, __dirname)
 
 app.use(express.json()) // for parsing application/json
 
