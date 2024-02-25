@@ -1,0 +1,4 @@
+{
+  "extends": "../tsconfig.json"
+  // Additional configuration options can be added here
+}

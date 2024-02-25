@@ -1,4 +1,4 @@
-import { ChatGptMessage } from '../src/interface'
+import { ChatGptMessage } from '../client/src/interface'
 
 export const systemMessages: ChatGptMessage = {
   role: 'system',

@@ -1,4 +1,4 @@
-import { Ticket } from '../src/interface'
+import { Ticket } from '../client/src/interface'
 
 export const planning_task = (tickets: Ticket[]) => {
   // const ticketsByAssignee = tickets.reduce((acc, ticket) => {

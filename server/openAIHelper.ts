@@ -1,6 +1,6 @@
 import { systemMessages } from './constance'
 import axios from 'axios'
-import { ChatGptMessage } from '../src/interface'
+import { ChatGptMessage } from '../client/src/interface'
 import { planning_task, tools } from './utils'
 
 export default class AxiosHelper {

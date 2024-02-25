@@ -2,13 +2,22 @@ import { Request, Response } from 'express'
 import express from 'express'
 import cors from 'cors'
 import AxiosHelper from './openAIHelper'
-import { ChatGptMessage } from '../src/interface'
+import { ChatGptMessage } from '../client/src/interface'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
 const app = express()
 const axiosHelper = new AxiosHelper()
 
 app.use(cors())
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+console.log(`🚀 SLOG (${new Date().toLocaleTimeString()}): ➡ __dirname:`, __dirname)
+
 app.use(express.json()) // for parsing application/json
+
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, '../client/build')))
 
 app.post('/reset', (req: Request, res: Response) => {
   axiosHelper.clearHistory()
@@ -36,6 +45,11 @@ app.post('/prompt', async (req: Request, res: Response) => {
   }
 })
 
-app.listen(3001, () => {
-  console.log('Server is running on port 3001')
+// Handles any requests that don't match the ones above
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/build', 'index.html'))
+})
+
+app.listen(6000, () => {
+  console.log('Server is running on port 6000')
 })

@@ -53,13 +53,10 @@ FSH2403ST-201	Stiger	1
     const fetchChatCompletion = async (input: string): Promise<ChatGptMessage> => {
       setIsLoading(true)
       try {
-        const { data }: { data: ChatGptMessage } = await axios.post(
-          'http://localhost:3001/prompt',
-          {
-            prompt: input,
-            model,
-          }
-        )
+        const { data }: { data: ChatGptMessage } = await axios.post('/prompt', {
+          prompt: input,
+          model,
+        })
 
         return data
       } catch (error: any) {
@@ -91,7 +88,7 @@ FSH2403ST-201	Stiger	1
   }, [input, setConversation, toast, model])
 
   const handleReset = useCallback(async () => {
-    await axios.post('http://localhost:3001/reset')
+    await axios.post('/reset')
     setConversation([])
   }, [])
 
