@@ -39,10 +39,10 @@ export default class AxiosHelper {
         message: ChatGptMessage
         finish_reason: 'stop' | 'tool_calls'
       } = response.data.choices[0]
-      console.log(
-        `🚀 SLOG (${new Date().toLocaleTimeString()}): ➡ AxiosHelper ➡ post ➡ message:`,
-        JSON.stringify(response.data.choices[0], null, 2)
-      )
+      // console.log(
+      //   `🚀 SLOG (${new Date().toLocaleTimeString()}): ➡ AxiosHelper ➡ post ➡ message:`,
+      //   JSON.stringify(response.data.choices[0], null, 2)
+      // )
 
       this.history.push(message)
 

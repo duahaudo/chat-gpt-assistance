@@ -14,10 +14,8 @@ const axiosHelper = new AxiosHelper()
 
 app.use(cors())
 
-app.use(express.json()) // for parsing application/json
-
-// Serve static files from the React app
-app.use(express.static(path.join(__dirname, '../client/build')))
+app.use(express.json())
+app.use(express.static(path.join(__dirname, '..', 'client', 'build')))
 
 app.post('/reset', (req: Request, res: Response) => {
   axiosHelper.clearHistory()
@@ -47,9 +45,10 @@ app.post('/prompt', async (req: Request, res: Response) => {
 
 // Handles any requests that don't match the ones above
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/build', 'index.html'))
+  res.sendFile(path.join(__dirname, '..', 'client', 'build'))
 })
 
-app.listen(6000, () => {
-  console.log('Server is running on port 6000')
+const port = process.env.PORT || 6001
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`)
 })
