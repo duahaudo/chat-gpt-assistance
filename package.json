@@ -5,7 +5,8 @@
   "scripts": {
     "build": "cd client && npm run build",
     "dev": "concurrently \"cd client && npm start\" \"cd server && npm run server\"",
-    "start": "cd server && npm start"
+    "start": "cd server && npm start",
+    "bootstrap": "npm install && (cd client && npm install) && (cd server && npm install)"
   },
   "eslintConfig": {
     "extends": [
