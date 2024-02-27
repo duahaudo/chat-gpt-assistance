@@ -1,6 +1,6 @@
-import { taskPlanner, taskExplainer } from './systemPrompt'
 import axios from 'axios'
 import { ChatGptMessage } from '../client/src/interface'
+import { systemPrompt } from './systemPrompt'
 import { planning_task, tools } from './utils'
 
 export default class AxiosHelper {
@@ -13,21 +13,16 @@ export default class AxiosHelper {
   })
 
   private history: ChatGptMessage[] = []
-  private context: Record<string, ChatGptMessage> = {
-    taskPlanner: {
-      role: 'system',
-      content: taskPlanner,
-    },
-    taskExplainer: {
-      role: 'system',
-      content: taskExplainer,
-    },
-  }
+  private context: Record<string, ChatGptMessage> = systemPrompt
 
-  defaultContext = this.context.taskExplainer
+  defaultContext = this.context.feAssistant
 
   constructor() {
     this.history.push(this.defaultContext)
+  }
+
+  setContext(key: keyof typeof systemPrompt) {
+    this.defaultContext = systemPrompt[key] || systemPrompt.feAssistant
   }
 
   async post(model: string, prompt: string) {
@@ -51,10 +46,6 @@ export default class AxiosHelper {
         message: ChatGptMessage
         finish_reason: 'stop' | 'tool_calls'
       } = response.data.choices[0]
-      // console.log(
-      //   `🚀 SLOG (${new Date().toLocaleTimeString()}): ➡ AxiosHelper ➡ post ➡ message:`,
-      //   JSON.stringify(response.data.choices[0], null, 2)
-      // )
 
       this.history.push(message)
 

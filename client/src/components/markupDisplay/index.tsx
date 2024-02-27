@@ -2,11 +2,13 @@ import React from 'react'
 import './style.css'
 import SyntaxHighlighter from 'react-syntax-highlighter'
 import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs'
-import { Button } from '@chakra-ui/react'
+import { Button, useToast, Box } from '@chakra-ui/react'
 // @ts-expect-error
 import CopyToClipboard from 'react-copy-to-clipboard'
 
 export const SlackMarkup: React.FC<any> = ({ text }) => {
+  const toast = useToast()
+
   const renderText = () => {
     const blocks = text.split('```')
     return blocks.map((block: any, index: any) => {
@@ -16,13 +18,24 @@ export const SlackMarkup: React.FC<any> = ({ text }) => {
         const code = block.replace(language, '').trim()
         return (
           <>
-            <div>
+            <Box textAlign='right'>
               <CopyToClipboard
                 text={code}
-                onCopy={() => alert('Copied')}>
-                <Button size='sm'>Copy</Button>
+                onCopy={() =>
+                  toast({
+                    title: 'Copied to clipboard',
+                    status: 'success',
+                    duration: 3000,
+                    isClosable: true,
+                  })
+                }>
+                <Button
+                  size='sm'
+                  colorScheme='blue'>
+                  Copy
+                </Button>
               </CopyToClipboard>
-            </div>
+            </Box>
             <SyntaxHighlighter
               language='typescript'
               style={atomOneDark}

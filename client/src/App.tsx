@@ -5,10 +5,12 @@ import './App.css'
 import Conversation from './components/Conversation'
 import InputPrompt from './components/InputPrompt'
 import { ChatGptMessage, Message } from './interface'
+import CustomGpt from './components/CustomGpt'
 
 const App: React.FC = () => {
   const [conversation, setConversation] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [systemMessage, setSystemMessage] = useState<string>('')
   const toast = useToast()
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -32,6 +34,7 @@ const App: React.FC = () => {
           const { data }: { data: ChatGptMessage } = await axios.post('/prompt', {
             prompt: input,
             model,
+            systemMessage,
           })
 
           return data
@@ -72,6 +75,23 @@ const App: React.FC = () => {
 
   return (
     <Box p={4}>
+      <CustomGpt
+        disabled={conversation.length > 0}
+        systemMessage={systemMessage}
+        setSystemMessage={(promptKey: string) => {
+          setSystemMessage(promptKey)
+          axios.post('/setKey', { key: promptKey }).then((result) => {
+            const message = result.data.message as string
+            toast({
+              title: message,
+              status: 'success',
+              duration: 3000,
+              isClosable: true,
+            })
+          })
+        }}
+      />
+
       <Conversation
         conversation={conversation}
         ref={messagesEndRef}

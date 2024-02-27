@@ -1,3 +1,4 @@
+import { systemPrompt } from './systemPrompt'
 import { Request, Response } from 'express'
 import express from 'express'
 import cors from 'cors'
@@ -16,6 +17,17 @@ app.use(cors())
 
 app.use(express.json())
 app.use(express.static(path.join(__dirname, '..', 'client', 'build')))
+
+app.get(`/getKeys`, (req: Request, res: Response) => {
+  const data = Object.keys(systemPrompt)
+  res.json(data)
+})
+
+app.post(`/setKey`, (req: Request, res: Response) => {
+  const key = req.body.key
+  axiosHelper.setContext(key)
+  res.json({ message: `Context has been set to ${key}` })
+})
 
 app.post('/reset', (req: Request, res: Response) => {
   axiosHelper.clearHistory()

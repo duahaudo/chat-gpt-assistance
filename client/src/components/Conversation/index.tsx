@@ -12,7 +12,7 @@ export default forwardRef<HTMLDivElement, IConversation>(({ conversation }, ref)
       mt={4}
       p={4}
       bg='gray.50'
-      height='calc(100vh - 350px)' // Adjust the subtracted value based on the height of your other elements
+      height='calc(100vh - 400px)' // Adjust the subtracted value based on the height of your other elements
       overflowY='auto'>
       {conversation.map((msg, index) => {
         // const isMarkdown = containsMarkdown(msg.text)
@@ -25,7 +25,7 @@ export default forwardRef<HTMLDivElement, IConversation>(({ conversation }, ref)
             mt={2}>
             <Box
               bg={msg.isUser ? 'blue.100' : 'green.100'}
-              p={2}
+              p={4}
               borderRadius='lg'
               maxWidth='80%'
               minWidth='40%'
