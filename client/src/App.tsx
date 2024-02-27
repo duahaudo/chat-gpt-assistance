@@ -8,7 +8,6 @@ import {
   Progress,
   HStack,
   Flex,
-  Text,
   Radio,
   RadioGroup,
   Stack,

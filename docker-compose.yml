@@ -1,10 +1,30 @@
 version: '3.8'
 services:
-  web:
-    image: chat-gpt-assistance:latest
+  api:
+    image: chat-gpt-assistance-api:latest
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: server/Dockerfile
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    env_file:
+      - .env
+    networks:
+      - chat-gpt-assistance-network
+    volumes:
+      - ./server:/usr/src/app
+
+  web:
+    image: chat-gpt-assistance-ui:latest
+    build:
+      context: .
+      dockerfile: client/Dockerfile
     ports:
-      - '6001:6001'
+      - '3000:3000'
+    networks:
+      - chat-gpt-assistance-network
+    volumes:
+      - ./client:/usr/src/app
     restart: always
+networks:
+  chat-gpt-assistance-network:
