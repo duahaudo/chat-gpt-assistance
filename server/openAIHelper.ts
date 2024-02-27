@@ -33,10 +33,6 @@ export default class AxiosHelper {
   async post(model: string, prompt: string) {
     try {
       this.history.push({ role: 'user', content: prompt })
-      console.log(
-        `🚀 SLOG (${new Date().toLocaleTimeString()}): ➡ AxiosHelper ➡ post ➡ this.history:`,
-        this.history
-      )
 
       const data = {
         messages: [...this.history],
