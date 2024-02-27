@@ -17,6 +17,7 @@ import {
 import axios from 'axios'
 import './App.css'
 import { ChatGptMessage, ChatGptModel, Message } from './interface'
+import { SlackMarkup } from './components/markupDisplay'
 
 const App: React.FC = () => {
   const [input, setInput] = useState<string>('')
@@ -108,7 +109,8 @@ const App: React.FC = () => {
                 textAlign={msg.isUser ? 'right' : 'left'}>
                 <div style={{ overflowX: 'auto' }}>
                   <Box>
-                    <Text whiteSpace='pre-wrap'>{msg.text}</Text>
+                    {/* <Text whiteSpace='pre-wrap'>{msg.text}</Text> */}
+                    <SlackMarkup text={msg.text} />
                   </Box>
                 </div>
               </Box>
@@ -129,6 +131,13 @@ const App: React.FC = () => {
             rows={10}
             disabled={isLoading}
             onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault()
+                // Code to send the message goes here
+                handleSubmit()
+              }
+            }}
           />
           {isLoading && (
             <Progress
