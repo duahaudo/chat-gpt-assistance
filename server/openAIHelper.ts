@@ -1,4 +1,4 @@
-import { taskPlanner } from './systemPrompt'
+import { taskPlanner, taskExplainer } from './systemPrompt'
 import axios from 'axios'
 import { ChatGptMessage } from '../client/src/interface'
 import { planning_task, tools } from './utils'
@@ -13,9 +13,21 @@ export default class AxiosHelper {
   })
 
   private history: ChatGptMessage[] = []
+  private context: Record<string, ChatGptMessage> = {
+    taskPlanner: {
+      role: 'system',
+      content: taskPlanner
+    },
+    taskExplainer: {
+      role: 'system',
+      content: taskExplainer
+    }
+  }
+
+  defaultContext = this.context.taskExplainer
 
   constructor() {
-    this.history.push(taskPlanner)
+    this.history.push(this.defaultContext)
   }
 
   async post(model: string, prompt: string) {
@@ -77,6 +89,6 @@ export default class AxiosHelper {
   }
 
   clearHistory() {
-    this.history = [{ ...taskPlanner }]
+    this.history = [{ ...this.defaultContext }]
   }
 }
