@@ -26,6 +26,7 @@ app.get(`/getKeys`, (req: Request, res: Response) => {
 app.post(`/setKey`, (req: Request, res: Response) => {
   const key = req.body.key
   axiosHelper.setContext(key)
+  axiosHelper.clearHistory()
   res.json({ message: `Context has been set to ${key}` })
 })
 

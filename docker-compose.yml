@@ -13,6 +13,7 @@ services:
       - chat-gpt-assistance-network
     volumes:
       - ./server:/usr/src/app
+      - /usr/src/app/node_modules
 
   web:
     image: chat-gpt-assistance-ui:latest
@@ -25,6 +26,7 @@ services:
       - chat-gpt-assistance-network
     volumes:
       - ./client:/usr/src/app
+      - /usr/src/app/node_modules
     restart: always
 networks:
   chat-gpt-assistance-network:
