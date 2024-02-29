@@ -1,7 +1,7 @@
 # ------------------------------------------------------
 # Client Build
 # ------------------------------------------------------
-FROM node:16.20.2-buster as clientBuilder
+FROM node:20-alpine3.18 as clientBuilder
 
 # Set working directory in the container
 WORKDIR /usr/src/app
@@ -22,7 +22,7 @@ RUN cd client && npm run build
 # ------------------------------------------------------
 # Server Build
 # ------------------------------------------------------
-FROM node:16.20.2-buster as serverBuilder
+FROM node:20-alpine3.18 as serverBuilder
 
 # Set working directory in the container
 WORKDIR /usr/src/app

@@ -1,7 +1,7 @@
 # ------------------------------------------------------
 # Client Build
 # ------------------------------------------------------
-FROM node:16.20.2-buster as clientBuilder
+FROM node:20-alpine3.18 as clientBuilder
 
 # Set working directory in the container
 WORKDIR /usr/src/app
