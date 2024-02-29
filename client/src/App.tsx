@@ -65,7 +65,7 @@ const App: React.FC = () => {
         }, 0)
       }
     },
-    [setConversation, toast]
+    [systemMessage, toast]
   )
 
   const handleReset = useCallback(async () => {

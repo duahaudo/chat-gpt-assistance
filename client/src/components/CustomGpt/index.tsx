@@ -8,7 +8,7 @@ interface ICustomGpt {
   disabled: boolean
 }
 
-export default ({ systemMessage, setSystemMessage, disabled }: ICustomGpt) => {
+const CustomGptList = ({ systemMessage, setSystemMessage, disabled }: ICustomGpt) => {
   const [keys, setKeys] = useState<string[]>([])
 
   useEffect(() => {
@@ -21,13 +21,17 @@ export default ({ systemMessage, setSystemMessage, disabled }: ICustomGpt) => {
         console.error('Error fetching keys:', error)
       }
     }
+    if (!systemMessage && !disabled) {
+      fetchKeys()
+    }
+  }, [setSystemMessage, systemMessage, disabled, keys])
 
-    fetchKeys()
-  }, [])
-
-  const handleSelect = useCallback((value: string) => {
-    setSystemMessage(value)
-  }, [])
+  const handleSelect = useCallback(
+    (value: string) => {
+      setSystemMessage(value)
+    },
+    [setSystemMessage]
+  )
 
   return (
     <Menu>
@@ -50,3 +54,5 @@ export default ({ systemMessage, setSystemMessage, disabled }: ICustomGpt) => {
     </Menu>
   )
 }
+
+export default CustomGptList
