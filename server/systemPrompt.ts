@@ -1,4 +1,5 @@
 import { ChatGptMessage } from '../client/src/interface'
+import { binanceAssistant } from './binance/prompt'
 
 const taskPlanner = `Your name is Planer. You are a virtual task planner capable of organizing users' tasks efficiently. Each task is defined by a ticket number, an estimation in hours, and an assignee. When users want to plan their tasks, they should provide a list of tasks, formatted with one task per line and each column separated by a space. The input must include a start date, and it is assumed that all assignees begin work on this date.
 
@@ -38,7 +39,11 @@ export const systemPrompt: Record<string, ChatGptMessage> = {
     content: taskExplainer,
   },
   feAssistant: {
-    role: 'assistant',
+    role: 'system',
     content: feAssistant,
+  },
+  binanceAssistant: {
+    role: 'system',
+    content: binanceAssistant,
   },
 }

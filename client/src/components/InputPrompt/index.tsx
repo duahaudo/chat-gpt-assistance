@@ -11,18 +11,28 @@ import {
   Box,
 } from '@chakra-ui/react'
 import { ChatGptModel } from '../../interface'
-import { forwardRef, useCallback, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useState } from 'react'
 
 interface IInputPrompt {
   isLoading: boolean
+  systemMessage: string
   handleSubmit: (input: string, model: string) => void
   handleReset: () => void
 }
 
 export default forwardRef<HTMLTextAreaElement, IInputPrompt>(
-  ({ isLoading, handleSubmit, handleReset }, textareaRef) => {
+  ({ isLoading, handleSubmit, handleReset, systemMessage }, textareaRef) => {
     const [input, setInput] = useState<string>('')
-    const [model, setModel] = useState<ChatGptModel>(ChatGptModel['gpt-4-turbo-preview'])
+    const [model, setModel] = useState<ChatGptModel>(ChatGptModel['gpt-3.5-turbo'])
+
+    useEffect(() => {
+      if (systemMessage === 'binanceAssistant') {
+        // alway use gpt-4-turbo-preview for binanceAssistant
+        setModel(ChatGptModel['gpt-4-turbo-preview'])
+      } else {
+        setModel(ChatGptModel['gpt-3.5-turbo'])
+      }
+    }, [systemMessage])
 
     const submit = useCallback(() => {
       handleSubmit(input, model)
@@ -39,7 +49,7 @@ export default forwardRef<HTMLTextAreaElement, IInputPrompt>(
             placeholder='Enter your message...'
             value={input}
             rows={10}
-            disabled={isLoading}
+            isDisabled={isLoading}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
@@ -64,7 +74,11 @@ export default forwardRef<HTMLTextAreaElement, IInputPrompt>(
             onChange={(val: ChatGptModel) => setModel(val)}
             value={model}>
             <Stack direction='row'>
-              <Radio value={ChatGptModel['gpt-3.5-turbo']}>GPT-3.5-Turbo</Radio>
+              <Radio
+                isDisabled={systemMessage === 'binanceAssistant'}
+                value={ChatGptModel['gpt-3.5-turbo']}>
+                GPT-3.5-Turbo
+              </Radio>
               <Radio value={ChatGptModel['gpt-4-turbo-preview']}>GPT-4-Turbo-Preview</Radio>
             </Stack>
           </RadioGroup>

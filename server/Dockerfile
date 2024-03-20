@@ -1,7 +1,7 @@
 # ------------------------------------------------------
 # Server Build
 # ------------------------------------------------------
-FROM node:20-alpine3.18 as serverBuilder
+FROM node:16.20.2-buster as serverBuilder
 
 # Set working directory in the container
 WORKDIR /usr/src/app
@@ -10,6 +10,7 @@ WORKDIR /usr/src/app
 COPY server/package*.json ./
 
 RUN npm install
+RUN npm install -g typescript ts-node
 
 # copy server 
 COPY ./server ./

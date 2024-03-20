@@ -10,7 +10,7 @@ import CustomGpt from './components/CustomGpt'
 const App: React.FC = () => {
   const [conversation, setConversation] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
-  const [systemMessage, setSystemMessage] = useState<string>('')
+  const [systemMessage, setSystemMessage] = useState<string>('') // keyof SystemPrompts
   const toast = useToast()
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -101,6 +101,7 @@ const App: React.FC = () => {
         isLoading={isLoading}
         handleSubmit={handleSubmit}
         handleReset={handleReset}
+        systemMessage={systemMessage}
         ref={textareaRef}
       />
     </Box>
