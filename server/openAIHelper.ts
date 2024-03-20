@@ -29,7 +29,7 @@ export default class AxiosHelper {
     this.defaultContext = systemPrompt[key] || systemPrompt.binanceAssistant
   }
 
-  async post(model: string, prompt: string) {
+  async post(model: string, prompt: string): Promise<ChatGptMessage> {
     try {
       this.history.push({ role: 'user', content: prompt })
 
@@ -89,7 +89,7 @@ export default class AxiosHelper {
   async functionCallHandler(
     toolsCall: Record<string, any>,
     model?: string
-  ): Promise<ChatGptMessage | null> {
+  ): Promise<ChatGptMessage> {
     const params = JSON.parse(toolsCall.function.arguments)
     const {
       id,
@@ -120,10 +120,12 @@ export default class AxiosHelper {
         }
         this.history.push(functionResponse)
 
-        return this.post(model || 'gpt-3.5-turbo', content)
+        const finalMessage = await this.post(model || 'gpt-3.5-turbo', content)
+        binance.writeToFile(`${new Date().toLocaleTimeString()}\n ${finalMessage.content}`)
 
-      default:
-        return null
+        return finalMessage
     }
+
+    return { content: '', role: 'assistant' } as ChatGptMessage
   }
 }
