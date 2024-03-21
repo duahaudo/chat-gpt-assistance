@@ -18,10 +18,11 @@ interface IInputPrompt {
   systemMessage: string
   handleSubmit: (input: string, model: string) => void
   handleReset: () => void
+  handleShowHistory: () => void
 }
 
 export default forwardRef<HTMLTextAreaElement, IInputPrompt>(
-  ({ isLoading, handleSubmit, handleReset, systemMessage }, textareaRef) => {
+  ({ isLoading, handleSubmit, handleReset, handleShowHistory, systemMessage }, textareaRef) => {
     const [input, setInput] = useState<string>('')
     const [model, setModel] = useState<ChatGptModel>(ChatGptModel['gpt-3.5-turbo'])
 
@@ -83,6 +84,12 @@ export default forwardRef<HTMLTextAreaElement, IInputPrompt>(
             </Stack>
           </RadioGroup>
           <Spacer />
+          <Button
+            variant='outline'
+            isDisabled={isLoading}
+            onClick={handleShowHistory}>
+            Show History
+          </Button>
           <Button
             colorScheme='red'
             isDisabled={isLoading}

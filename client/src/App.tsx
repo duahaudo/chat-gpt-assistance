@@ -73,6 +73,11 @@ const App: React.FC = () => {
     setConversation([])
   }, [])
 
+  const handleShowHistory = useCallback(async () => {
+    const history = await axios.get('/history').then((res) => res.data)
+    console.log(`🚀 SLOG (${new Date().toLocaleTimeString()}): ➡ history:`, history)
+  }, [])
+
   return (
     <Box p={4}>
       <CustomGpt
@@ -101,6 +106,7 @@ const App: React.FC = () => {
         isLoading={isLoading}
         handleSubmit={handleSubmit}
         handleReset={handleReset}
+        handleShowHistory={handleShowHistory}
         systemMessage={systemMessage}
         ref={textareaRef}
       />

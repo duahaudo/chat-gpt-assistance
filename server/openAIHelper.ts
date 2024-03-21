@@ -24,6 +24,10 @@ export default class AxiosHelper {
     this.history.push(this.defaultContext)
   }
 
+  showHistory() {
+    return this.history
+  }
+
   setContext(key: keyof typeof systemPrompt) {
     this.contextName = key || 'binanceAssistant'
     this.defaultContext = systemPrompt[key] || systemPrompt.binanceAssistant
@@ -91,6 +95,13 @@ export default class AxiosHelper {
     model?: string
   ): Promise<ChatGptMessage> {
     const params = JSON.parse(toolsCall.function.arguments)
+    const functionName = toolsCall.function.name as keyof BinanceHelper
+    console.log(
+      `🚀 SLOG (${new Date().toLocaleTimeString()}): ➡ AxiosHelper ➡ functionName:`,
+      functionName,
+      params
+    )
+
     const {
       id,
       function: { name },
@@ -111,19 +122,25 @@ export default class AxiosHelper {
       }
       case 'binanceAssistant':
         const binance = new BinanceHelper()
-        const content = await binance.handleFunctionCall(params.symbol)
-        const functionResponse: ChatGptMessage = {
-          tool_call_id: id,
-          role: 'tool',
-          name,
-          content: 'Data fetching is complete',
+        if (!!binance[functionName] && typeof binance[functionName] === 'function') {
+          const content = (await binance[functionName](params.symbol)) as string
+          const functionResponse: ChatGptMessage = {
+            tool_call_id: id,
+            role: 'tool',
+            name,
+            content: '',
+          }
+
+          this.history.push(functionResponse)
+
+          const finalMessage = await this.post(model || 'gpt-3.5-turbo', content)
+
+          if (functionName === 'getCandlesData') {
+            binance.writeToFile(`${new Date().toLocaleTimeString()}\n ${finalMessage.content}`)
+          }
+
+          return finalMessage
         }
-        this.history.push(functionResponse)
-
-        const finalMessage = await this.post(model || 'gpt-3.5-turbo', content)
-        binance.writeToFile(`${new Date().toLocaleTimeString()}\n ${finalMessage.content}`)
-
-        return finalMessage
     }
 
     return { content: '', role: 'assistant' } as ChatGptMessage

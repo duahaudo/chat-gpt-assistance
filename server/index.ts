@@ -23,6 +23,11 @@ app.get(`/getKeys`, (req: Request, res: Response) => {
   res.json(data)
 })
 
+app.get(`/history`, (req: Request, res: Response) => {
+  const data = axiosHelper.showHistory()
+  res.json(data)
+})
+
 app.post(`/setKey`, (req: Request, res: Response) => {
   const key = req.body.key
   axiosHelper.setContext(key)

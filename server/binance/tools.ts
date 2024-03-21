@@ -24,4 +24,30 @@ export const tools = [
       },
     },
   },
+  {
+    type: 'function',
+    function: {
+      name: 'getSymbols',
+      description:
+        '24 hour rolling window price change statistics in Binance. Gives an overview of the market.',
+      parameters: {},
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'getSymbolPrice',
+      description: 'Function to get current price of symbol in binance',
+      parameters: {
+        type: 'object',
+        properties: {
+          symbol: {
+            type: 'string',
+            description: 'The symbol of the currency pair.',
+          },
+        },
+        required: ['symbol'],
+      },
+    },
+  },
 ]
