@@ -18,7 +18,7 @@ export default forwardRef<HTMLDivElement, IConversation>(({ conversation }, ref)
         // const isMarkdown = containsMarkdown(msg.text)
         return (
           <Flex
-            key={index}
+            key={Date.now() + index}
             direction='column'
             alignItems={msg.isUser ? 'flex-end' : 'flex-start'}
             width='100%'

@@ -38,7 +38,10 @@ export default class AxiosHelper {
       this.history.push({ role: 'user', content: prompt })
 
       const data = {
-        messages: [...this.history],
+        messages: this.history.map((item) => ({
+          ...item,
+          content: (item.content || '').replace(/\n/g, ''),
+        })),
         model: model || 'gpt-3.5-turbo',
         temperature: 0.1,
         tool_choice: 'auto',
@@ -55,6 +58,10 @@ export default class AxiosHelper {
         }
       }
 
+      console.log(
+        `🚀 SLOG (${new Date().toLocaleTimeString()}): ➡ AxiosHelper ➡ post ➡ data:`,
+        data
+      )
       const response = await this.axiosInstance.post('/chat/completions', data)
 
       const {
@@ -123,7 +130,7 @@ export default class AxiosHelper {
       case 'binanceAssistant':
         const binance = new BinanceHelper()
         if (!!binance[functionName] && typeof binance[functionName] === 'function') {
-          const content = (await binance[functionName](params.symbol)) as string
+          const content = (await binance[functionName](params.symbol, params.price)) as string
           const functionResponse: ChatGptMessage = {
             tool_call_id: id,
             role: 'tool',
@@ -134,10 +141,6 @@ export default class AxiosHelper {
           this.history.push(functionResponse)
 
           const finalMessage = await this.post(model || 'gpt-3.5-turbo', content)
-
-          if (functionName === 'getCandlesData') {
-            binance.writeToFile(`${new Date().toLocaleTimeString()}\n ${finalMessage.content}`)
-          }
 
           return finalMessage
         }
