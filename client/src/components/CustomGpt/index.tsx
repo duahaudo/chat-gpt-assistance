@@ -16,7 +16,7 @@ const CustomGptList = ({ systemMessage, setSystemMessage, disabled }: ICustomGpt
       try {
         const { data } = await axios.get('/getKeys')
         setKeys(data)
-        setSystemMessage(data[0])
+        setSystemMessage(data.find((item: string) => item.includes('binance')))
       } catch (error: any) {
         console.error('Error fetching keys:', error)
       }

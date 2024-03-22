@@ -90,4 +90,25 @@ export const tools = [
       },
     },
   },
+  {
+    type: 'function',
+    function: {
+      name: 'getBalance',
+      description: 'Get current balance of one symbol of the account',
+      parameters: {
+        type: 'object',
+        properties: {
+          assets: {
+            type: 'array',
+            description: 'The array of asset symbol to get the balance of.',
+            items: {
+              type: 'string',
+              description: 'The asset symbol to get the balance of.',
+            },
+          },
+        },
+        required: ['asset'],
+      },
+    },
+  },
 ]

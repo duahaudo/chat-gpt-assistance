@@ -18,7 +18,7 @@ export default class AxiosHelper {
   private context: Record<string, ChatGptMessage> = systemPrompt
   private contextName: keyof typeof systemPrompt = 'binanceAssistant'
 
-  defaultContext = this.context.feAssistant
+  defaultContext = this.context.binanceAssistant
 
   constructor() {
     this.history.push(this.defaultContext)
@@ -58,10 +58,6 @@ export default class AxiosHelper {
         }
       }
 
-      console.log(
-        `🚀 SLOG (${new Date().toLocaleTimeString()}): ➡ AxiosHelper ➡ post ➡ data:`,
-        data
-      )
       const response = await this.axiosInstance.post('/chat/completions', data)
 
       const {
@@ -130,7 +126,7 @@ export default class AxiosHelper {
       case 'binanceAssistant':
         const binance = new BinanceHelper()
         if (!!binance[functionName] && typeof binance[functionName] === 'function') {
-          const content = (await binance[functionName](params.symbol, params.price)) as string
+          const content = (await binance[functionName](params)) as string
           const functionResponse: ChatGptMessage = {
             tool_call_id: id,
             role: 'tool',

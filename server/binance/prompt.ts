@@ -49,3 +49,14 @@ export const binanceJsonToHuman = (data: string) => `Analysis data insights with
 ${data}
 ###
 `
+
+export const binanceAccountBalance = (data: string) => `My account balance is:
+###
+${data}
+###
+`
+
+export const binancePlaceOrder = ({ symbol, price, balances }: any) => `
+Utilize various analysis techniques to create list of order for this symbol: ${symbol} with price details: ${price} and current asset balances in my account: ${balances}
+Response 4 order details to each price: buy1, buy2, sell1, sell2 with number of assets to buy or sell.
+`
