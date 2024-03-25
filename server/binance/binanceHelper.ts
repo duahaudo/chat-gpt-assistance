@@ -10,20 +10,10 @@ import fs from 'fs'
 import path from 'path'
 import crypto from 'crypto'
 import { fileURLToPath } from 'url'
+import { ORDER_TYPE, OrderParams, OrderPrice, SIDE, SYMBOL, Suggestions } from './interface'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-
-export enum SYMBOL {
-  BNBUSDT = 'BNBUSDT',
-}
-
-interface OrderPrice {
-  buy1: string
-  buy2: string
-  sell1: string
-  sell2: string
-}
 
 class BinanceHelper {
   private api: AxiosInstance
@@ -44,9 +34,32 @@ class BinanceHelper {
         },
       ],
     })
+
+    // Add a response interceptor
+    this.api.interceptors.response.use(
+      function (response) {
+        // Any status code that lies within the range of 2xx cause this function to trigger
+        // Do something with response data
+        return response
+      },
+      function (error) {
+        // Any status codes that falls outside the range of 2xx cause this function to trigger
+        // Do something with response error
+
+        // You can check error.response.status here and handle different cases
+        // For example, if (error.response.status === 404) {...}
+
+        // Always return a Promise that rejects with the error, so you can handle it in the specific request as well
+        console.log(
+          `🚀 SLOG (${new Date().toLocaleTimeString()}): ➡ BinanceHelper ➡ error:`,
+          error.response?.data
+        )
+        return Promise.reject(error)
+      }
+    )
   }
 
-  get(url: string, params: Record<string, string> = {}) {
+  enrichParams(params: Record<string, unknown> = {}) {
     const timestamp = Date.now().toString()
     const paramsObject = { timestamp, ...params } as Record<string, string>
     const urlSearchParams = Object.keys(paramsObject)
@@ -56,11 +69,29 @@ class BinanceHelper {
         return acc
       }, new URLSearchParams())
 
+    return {
+      ...params,
+      timestamp,
+      signature: this.generateSignature(urlSearchParams.toString()),
+    }
+  }
+
+  get(url: string, params: Record<string, string> = {}) {
+    const richParams = this.enrichParams(params)
+
     return this.api.get(url, {
       params: {
-        ...params,
-        timestamp,
-        signature: this.generateSignature(urlSearchParams.toString()),
+        ...richParams,
+      },
+    })
+  }
+
+  post(url: string, params: Record<string, unknown> = {}) {
+    const richParams = this.enrichParams(params)
+
+    return this.api.post(url, {
+      params: {
+        richParams,
       },
     })
   }
@@ -71,6 +102,7 @@ class BinanceHelper {
 
   getAccountBalances = async () => {
     try {
+      // @ts-ignore
       const { data } = await this.get(`/api/v3/account`, {
         omitZeroBalances: 'true',
       })
@@ -133,13 +165,49 @@ class BinanceHelper {
       .then((res) => binanceJsonToHuman(JSON.stringify(res.data)))
   }
 
-  async createTradeOrder({ symbol, price }: { symbol: string; price: OrderPrice }) {
-    this.logDataForAnalysis({ symbol, price })
+  async createTradeOrder({ suggestions }: { suggestions: Suggestions[] }) {
+    const result = await Promise.all(
+      suggestions.map((Suggestion) => {
+        this.logOrderForAnalysis(Suggestion)
 
-    const [asset1, asset2] = symbol.split('/')
-    const balances = await this.getBalance({ assets: [asset1, asset2] })
+        return this.createAnOrder(Suggestion)
+      })
+    )
+    console.log(
+      `🚀 SLOG (${new Date().toLocaleTimeString()}): ➡ BinanceHelper ➡ createTradeOrder ➡ result:`,
+      result
+    )
 
-    return binancePlaceOrder({ symbol, price, balances })
+    return 'Order are placed.'
+  }
+
+  createAnOrder({
+    symbol,
+    price,
+    quantity,
+    side,
+  }: {
+    symbol: string
+    price: number
+    quantity: number
+    side: SIDE
+  }) {
+    return this.post('/api/v3/order', {
+      symbol: symbol.replace('/', ''),
+      side,
+      type: ORDER_TYPE.LIMIT,
+      timeInForce: 'GTC', // Good Till Canceled
+      quantity,
+      price: price.toString(),
+    })
+  }
+
+  logOrderForAnalysis({ symbol, price, quantity, side }: Suggestions) {
+    const startTime = new Date().toLocaleString().replace(',', '')
+    const closeTime = new Date(Date.now() + 7 * 60 * 60 * 1000).toLocaleString().replace(',', '')
+    const rowData = `${symbol},${startTime},${closeTime},${side},${price},${quantity}\n`
+    const filePath = path.join(__dirname, '../binance.order.csv')
+    fs.appendFileSync(filePath, rowData)
   }
 
   logDataForAnalysis({ symbol, price }: { symbol: string; price: OrderPrice }) {

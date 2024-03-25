@@ -111,4 +111,43 @@ export const tools = [
       },
     },
   },
+  {
+    type: 'function',
+    function: {
+      name: 'createTradeOrder',
+      description: 'place order for the given symbol, price details, and quantity',
+      parameters: {
+        type: 'object',
+        properties: {
+          suggestions: {
+            type: 'array',
+            description: 'The array of suggestions to place order for.',
+            items: {
+              type: 'object',
+              properties: {
+                symbol: {
+                  type: 'string',
+                  description: 'The symbol for the trade order, e.g., BNBUSDT, BTCUSDT, etc.',
+                },
+                side: {
+                  type: 'string',
+                  description: 'The side of the order, either "BUY" or "SELL".',
+                },
+                price: {
+                  type: 'number',
+                  description: 'The price of the order.',
+                },
+                quantity: {
+                  type: 'number',
+                  description: 'The quantity of the order.',
+                },
+              },
+              required: ['symbol', 'side', 'price', 'quantity'],
+            },
+          },
+        },
+        required: ['suggestions'],
+      },
+    },
+  },
 ]

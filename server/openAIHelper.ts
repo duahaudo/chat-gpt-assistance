@@ -21,6 +21,18 @@ export default class AxiosHelper {
   defaultContext = this.context.binanceAssistant
 
   constructor() {
+    // Add a response interceptor
+    this.axiosInstance.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        console.log(
+          `🚀 SLOG (${new Date().toLocaleTimeString()}): ➡ AxiosHelper ➡ error:`,
+          error.response?.data
+        )
+        return Promise.reject(error)
+      }
+    )
+
     this.history.push(this.defaultContext)
   }
 
