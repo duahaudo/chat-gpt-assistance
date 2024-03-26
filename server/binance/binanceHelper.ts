@@ -4,16 +4,12 @@ import {
   binanceAnalysis,
   binanceJsonToHuman,
   binanceOverview,
-  binancePlaceOrder,
 } from './prompt'
 import fs from 'fs'
 import path from 'path'
 import crypto from 'crypto'
 import { fileURLToPath } from 'url'
-import { ORDER_TYPE, OrderParams, OrderPrice, SIDE, SYMBOL, Suggestions } from './interface'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+import { ORDER_TYPE, OrderPrice, SIDE, SYMBOL, Suggestions } from './interface'
 
 class BinanceHelper {
   private api: AxiosInstance
@@ -37,19 +33,8 @@ class BinanceHelper {
 
     // Add a response interceptor
     this.api.interceptors.response.use(
-      function (response) {
-        // Any status code that lies within the range of 2xx cause this function to trigger
-        // Do something with response data
-        return response
-      },
-      function (error) {
-        // Any status codes that falls outside the range of 2xx cause this function to trigger
-        // Do something with response error
-
-        // You can check error.response.status here and handle different cases
-        // For example, if (error.response.status === 404) {...}
-
-        // Always return a Promise that rejects with the error, so you can handle it in the specific request as well
+      response => response,
+      (error) => {
         console.log(
           `🚀 SLOG (${new Date().toLocaleTimeString()}): ➡ BinanceHelper ➡ error:`,
           error.response?.data
@@ -61,19 +46,17 @@ class BinanceHelper {
 
   enrichParams(params: Record<string, unknown> = {}) {
     const timestamp = Date.now().toString()
-    const paramsObject = { timestamp, ...params } as Record<string, string>
+    const paramsObject: Record<string, unknown> = { timestamp, ...params }
     const urlSearchParams = Object.keys(paramsObject)
       .sort()
       .reduce((acc, key) => {
-        acc.append(key, paramsObject[key])
+        acc.append(key, paramsObject[key] as any)
         return acc
       }, new URLSearchParams())
 
-    return {
-      ...params,
-      timestamp,
-      signature: this.generateSignature(urlSearchParams.toString()),
-    }
+    urlSearchParams.append('signature', this.generateSignature(urlSearchParams.toString()))
+
+    return urlSearchParams
   }
 
   get(url: string, params: Record<string, string> = {}) {
@@ -206,19 +189,20 @@ class BinanceHelper {
     const startTime = new Date().toLocaleString().replace(',', '')
     const closeTime = new Date(Date.now() + 7 * 60 * 60 * 1000).toLocaleString().replace(',', '')
     const rowData = `${symbol},${startTime},${closeTime},${side},${price},${quantity}\n`
-    const filePath = path.join(__dirname, '../binance.order.csv')
-    fs.appendFileSync(filePath, rowData)
+    this.writeToFile(rowData, '../binance.order.csv')
   }
 
   logDataForAnalysis({ symbol, price }: { symbol: string; price: OrderPrice }) {
     const startTime = new Date().toLocaleString().replace(',', '')
     const closeTime = new Date(Date.now() + 7 * 60 * 60 * 1000).toLocaleString().replace(',', '')
     const rowData = `${symbol},${startTime},${closeTime},${price.buy1},${price.buy2},${price.sell1},${price.sell2}\n`
-    this.writeToFile(rowData)
+    this.writeToFile(rowData, '../binance.history.csv')
   }
 
-  writeToFile(data: string) {
-    const filePath = path.join(__dirname, '../binance.history.csv')
+  writeToFile(data: string, _path: string) {
+    const __filename = fileURLToPath(import.meta.url)
+    const __dirname = path.dirname(__filename)
+    const filePath = path.join(__dirname, _path)
     fs.appendFileSync(filePath, data)
   }
 }

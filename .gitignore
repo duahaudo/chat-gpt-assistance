@@ -27,3 +27,4 @@ yarn-error.log*
 build/
 server/public/
 binance.*.csv
+/server/binance/curl.sh
